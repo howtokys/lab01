@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Testing</title>
+    <style>
+        .form-section { margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; }
+        input { margin: 5px 0; padding: 5px; }
+    </style>
+</head>
+<body>
+    <div class="form-section">
+        <h2>Add New Listing (POST)</h2>
+        <form id="addForm">
+            <input type="text" id="_id" placeholder="Listing ID (_id)" required><br>
+            <input type="text" id="name" placeholder="Name"><br>
+            <input type="text" id="property_type" placeholder="Property Type"><br>
+            <input type="number" id="price" placeholder="Price"><br>
+            <button type="submit">Add Listing</button>
+        </form>
+    </div>
+
+    <div class="form-section">
+        <h2>Update Listing (PUT)</h2>
+        <form id="updateForm">
+            <input type="text" id="updateId" placeholder="Listing ID"><br>
+            <input type="text" id="updateName" placeholder="New Name"><br>
+            <input type="text" id="updatePropertyType" placeholder="New Property Type"><br>
+            <input type="number" id="updatePrice" placeholder="New Price"><br>
+            <button type="submit">Update Listing</button>
+        </form>
+    </div>
+
+    <div class="form-section">
+        <h2>Delete Listing (DELETE)</h2>
+        <form id="deleteForm">
+            <input type="text" id="deleteId" placeholder="Listing ID"><br>
+            <button type="submit">Delete Listing</button>
+        </form>
+    </div>
+
+    <script>
+        // POST new listing
+        document.getElementById('addForm').onsubmit = async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch('http://localhost:8080/api/listings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        _id: document.getElementById('_id').value,  // Changed from listingId to _id
+                        name: document.getElementById('name').value,
+                        property_type: document.getElementById('property_type').value,
+                        price: Number(document.getElementById('price').value)
+                    })
+                });
+                const result = await response.json();
+                alert('POST Result:\n' + JSON.stringify(result, null, 2));
+            } catch (error) {
+                alert('Error: ' + error);
+            }
+        };
+
+        // PUT update listing
+        document.getElementById('updateForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('updateId').value;
+            try {
+                const response = await fetch(`http://localhost:8080/api/listings/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById('updateName').value,
+                        property_type: document.getElementById('updatePropertyType').value,
+                        price: Number(document.getElementById('updatePrice').value)
+                    })
+                });
+                const result = await response.json();
+                alert('PUT Result:\n' + JSON.stringify(result, null, 2));
+            } catch (error) {
+                alert('Error: ' + error);
+            }
+        };
+
+        // DELETE listing
+        document.getElementById('deleteForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('deleteId').value;
+            try {
+                const response = await fetch(`http://localhost:8080/api/listings/${id}`, {
+                    method: 'DELETE'
+                });
+                if (response.status === 204) {
+                    alert('Listing deleted successfully');
+                } else {
+                    const result = await response.json();
+                    alert('DELETE Result:\n' + JSON.stringify(result, null, 2));
+                }
+            } catch (error) {
+                alert('Error: ' + error);
+            }
+        };
+    </script>
+</body>
+</html>

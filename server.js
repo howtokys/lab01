@@ -16,6 +16,10 @@ app.get('/', (req, res) => {
     res.json({ message: "API Listening" });
 });
 
+app.get('/test', (req, res) => {
+    res.sendFile(__dirname + '/test.html');
+});
+
 // Routes
 app.post('/api/listings', async (req, res) => {
     try {
@@ -29,8 +33,8 @@ app.post('/api/listings', async (req, res) => {
 app.get('/api/listings', async (req, res) => {
     const { page, perPage, name } = req.query;
     try {
-        const listings = await db.getAllListings(parseInt(page), parseInt(perPage), name);
-        res.json(listings);
+        const listings = await db.getAllListings(Number(page), Number(perPage), name);
+        res.status(200).json(listings);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -40,9 +44,9 @@ app.get('/api/listings/:id', async (req, res) => {
     try {
         const listing = await db.getListingById(req.params.id);
         if (listing) {
-            res.json(listing);
+            res.status(200).json(listing);
         } else {
-            res.status(404).json({ error: 'Listing not found' });
+            res.status(404).json({ error: "Listing not found" });
         }
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -53,9 +57,9 @@ app.put('/api/listings/:id', async (req, res) => {
     try {
         const result = await db.updateListingById(req.body, req.params.id);
         if (result.modifiedCount > 0) {
-            res.status(204).send();
+            res.status(200).json({ message: "Listing updated successfully" });
         } else {
-            res.status(404).json({ error: 'Listing not found or no changes made' });
+            res.status(404).json({ error: "Listing not found" });
         }
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -66,20 +70,27 @@ app.delete('/api/listings/:id', async (req, res) => {
     try {
         const result = await db.deleteListingById(req.params.id);
         if (result.deletedCount > 0) {
-            res.status(204).send();
+            res.status(204).send(); 
         } else {
-            res.status(404).json({ error: 'Listing not found' });
+            res.status(404).json({ error: "Listing not found" });
         }
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-const HTTP_PORT = 8080;
-db.initialize(process.env.MONGODB_CONN_STRING).then(()=>{
-    app.listen(HTTP_PORT, ()=>{
-        console.log(`server listening on: ${HTTP_PORT}`);
+// Port and Server Initialization
+const HTTP_PORT = process.env.PORT || 8080;
+
+db.initialize(process.env.MONGODB_CONN_STRING)
+    .then(() => {
+        app.listen(HTTP_PORT, () => {
+            console.log(`Server listening on: ${HTTP_PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.log(err);
     });
-}).catch((err)=>{
-    console.log(err);
-});
+
+// Export the app for Vercel
+module.exports = app;
