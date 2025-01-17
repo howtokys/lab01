@@ -39,17 +39,21 @@
     </div>
 
     <script>
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8080'
+            : 'https://lab01-5ylli4iwp-howtokys-projects.vercel.app'; 
+    
         // POST new listing
         document.getElementById('addForm').onsubmit = async (e) => {
             e.preventDefault();
             try {
-                const response = await fetch('http://localhost:8080/api/listings', {
+                const response = await fetch(`${API_URL}/api/listings`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        _id: document.getElementById('_id').value,  // Changed from listingId to _id
+                        _id: document.getElementById('_id').value,
                         name: document.getElementById('name').value,
                         property_type: document.getElementById('property_type').value,
                         price: Number(document.getElementById('price').value)
@@ -61,13 +65,13 @@
                 alert('Error: ' + error);
             }
         };
-
+    
         // PUT update listing
         document.getElementById('updateForm').onsubmit = async (e) => {
             e.preventDefault();
             const id = document.getElementById('updateId').value;
             try {
-                const response = await fetch(`http://localhost:8080/api/listings/${id}`, {
+                const response = await fetch(`${API_URL}/api/listings/${id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -84,13 +88,13 @@
                 alert('Error: ' + error);
             }
         };
-
+    
         // DELETE listing
         document.getElementById('deleteForm').onsubmit = async (e) => {
             e.preventDefault();
             const id = document.getElementById('deleteId').value;
             try {
-                const response = await fetch(`http://localhost:8080/api/listings/${id}`, {
+                const response = await fetch(`${API_URL}/api/listings/${id}`, {
                     method: 'DELETE'
                 });
                 if (response.status === 204) {
