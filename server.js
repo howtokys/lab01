@@ -8,12 +8,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 // Middleware
-app.use(cors({
-    origin: '*', 
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type']
-}));
-
+app.use(cors());
 app.use(express.json());
 
 // Initialize DB before handling any requests
