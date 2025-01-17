@@ -11,6 +11,11 @@ require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
+// Simple GET route
+app.get('/', (req, res) => {
+    res.json({ message: "API Listening" });
+});
+
 // Routes
 app.post('/api/listings', async (req, res) => {
     try {
