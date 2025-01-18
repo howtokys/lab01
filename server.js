@@ -1,3 +1,17 @@
+
+/********************************************************************************
+* BTI425 – Assignment 1
+*
+* I declare that this assignment is my own work in accordance with Seneca's
+* Academic Integrity Policy:
+*
+* https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html
+*
+* Name: ___Thuong Tuyen Tran____ Student ID: ___161527239__ Date: 1/17/2025___
+*
+* Published URL: https://lab01-howtokys-projects.vercel.app/
+*
+********************************************************************************/
 const ListingsDB = require("./modules/listingsDB.js");
 const db = new ListingsDB();
 
@@ -34,11 +48,6 @@ app.get('/', (req, res) => {
     res.json({ message: "API Listening" });
 });
 
-app.get('/test', (req, res) => {
-    res.sendFile(__dirname + '/test.html');
-});
-
-// Routes
 app.post('/api/listings', async (req, res) => {
     try {
         if (!db.Listing) {
@@ -103,12 +112,22 @@ app.delete('/api/listings/:id', async (req, res) => {
         }
         const result = await db.deleteListingById(req.params.id);
         if (result.deletedCount > 0) {
-            res.status(204).send();
+            res.status(200).json({
+                success: true,
+                message: "Listing deleted successfully",
+                deletedId: req.params.id
+            });
         } else {
-            res.status(404).json({ error: "Listing not found" });
+            res.status(404).json({ 
+                success: false,
+                error: "Listing not found" 
+            });
         }
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ 
+            success: false,
+            error: err.message 
+        });
     }
 });
 
@@ -125,5 +144,5 @@ db.initialize(process.env.MONGODB_CONN_STRING)
         console.log(err);
     });
 
-// Export the app for Vercel
+// Export for Vercel
 module.exports = app;
